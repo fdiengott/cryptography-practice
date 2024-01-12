@@ -1,0 +1,2 @@
+# Cryptography practice
+Since working as a frontend developer I felt that my security and cryptography skills were getting a bit rusty. This project is my opportunity to practice building a small backend server and sqlite database, implementing proper password storage techniques using salting and hashing, as well as json web tokens to authenticate in subsequent requests. As I learn more common cryptographic practices I hope to continue to add to this repo.
