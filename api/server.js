@@ -1,6 +1,7 @@
 const express = require("express");
 const db = require("./dbConfig");
 const { signup, login } = require("./users");
+const { authenticateToken } = require("./utils");
 
 const app = express();
 
@@ -8,9 +9,10 @@ const PORT = process.env.PORT || 8080;
 
 app.use(express.json());
 
-app.get("/users", async (req, res) => {
+app.get("/users", authenticateToken, async (req, res) => {
     try {
-        const users = await db("users");
+        const users = await db("users").where({ username: req.user.username });
+
         res.json(users);
     } catch (err) {
         console.error(err);

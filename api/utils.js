@@ -1,9 +1,13 @@
+require("dotenv").config();
+
 const {
     createHash,
     randomBytes,
     scryptSync,
     timingSafeEqual,
 } = require("crypto");
+
+const jwt = require("jsonwebtoken");
 
 // : basic hashing function. using the blake2s function optimized for 32-bit microprocessors.
 // : wanted to try a different function than sha256, which I believe to be the standard
@@ -32,4 +36,33 @@ const checkIfEqual = (hash, input) => {
     return match;
 };
 
-module.exports = { hash, saltedHash, checkIfEqual };
+const generateAccessToken = user => {
+    return jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, { expiresIn: "1h" });
+};
+
+const authenticateToken = (req, res, next) => {
+    const authHeader = req.headers.authorization;
+    const token = authHeader?.split(" ")[1];
+
+    if (!token) {
+        return res.sendStatus(401);
+    }
+
+    jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, decoded) => {
+        if (err) {
+            return res.sendStatus(403);
+        }
+
+        req.user = decoded;
+
+        next();
+    });
+};
+
+module.exports = {
+    hash,
+    saltedHash,
+    checkIfEqual,
+    generateAccessToken,
+    authenticateToken,
+};

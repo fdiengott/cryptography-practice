@@ -1,5 +1,5 @@
 const db = require("./dbConfig");
-const { saltedHash, checkIfEqual } = require("./utils");
+const { saltedHash, checkIfEqual, generateAccessToken } = require("./utils");
 
 const signup = async (username, password) => {
     const saltedHashedPassword = saltedHash(password);
@@ -10,7 +10,9 @@ const signup = async (username, password) => {
             password: saltedHashedPassword,
         });
 
-        return { id, message: "inserted successfully!" };
+        const token = generateAccessToken({ username, id });
+
+        return { id, message: "inserted successfully!", token };
     } catch (err) {
         console.error(err);
     }
